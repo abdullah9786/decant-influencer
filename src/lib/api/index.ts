@@ -52,4 +52,8 @@ export const productApi = {
   getAll: (params?: any) => api.get("/products", { params }),
 };
 
+export const brandApi = {
+  getAll: () => api.get("/brands"),
+};
+
 export default api;

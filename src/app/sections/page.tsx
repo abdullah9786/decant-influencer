@@ -17,7 +17,10 @@ import {
 interface Section {
   _id: string;
   title: string;
+  section_type?: string;
   product_ids: string[];
+  brand_names?: string[];
+  note_names?: string[];
   sort_order: number;
   is_active: boolean;
 }
@@ -114,12 +117,22 @@ export default function SectionsPage() {
                   className="text-slate-300 shrink-0 cursor-grab"
                 />
                 <div className="min-w-0">
-                  <h3 className="text-sm font-bold text-slate-900 truncate">
-                    {section.title}
-                  </h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-slate-900 truncate">
+                      {section.title}
+                    </h3>
+                    {section.section_type && section.section_type !== "products" && (
+                      <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 shrink-0">
+                        {section.section_type}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    {section.product_ids.length} product
-                    {section.product_ids.length !== 1 ? "s" : ""}
+                    {(section.section_type || "products") === "products"
+                      ? `${section.product_ids.length} product${section.product_ids.length !== 1 ? "s" : ""}`
+                      : (section.section_type === "brands"
+                        ? `${(section.brand_names || []).length} brand${(section.brand_names || []).length !== 1 ? "s" : ""}`
+                        : `${(section.note_names || []).length} note${(section.note_names || []).length !== 1 ? "s" : ""}`)}
                   </p>
                 </div>
               </div>
