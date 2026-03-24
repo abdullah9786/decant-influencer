@@ -28,7 +28,7 @@ export default function DashboardPage() {
   const [copied, setCopied] = useState(false);
 
   const storefrontUrl = user?.username
-    ? `https://decume.in/${user.username}`
+    ? `https://decume.in/${user.username}?ref=${user.username}`
     : null;
 
   useEffect(() => {
