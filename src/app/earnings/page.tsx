@@ -12,6 +12,7 @@ interface Commission {
   commission_rate: number;
   commission_amount: number;
   status: string;
+  cancellation_reason?: string;
   created_at: string;
 }
 
