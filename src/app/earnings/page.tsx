@@ -9,6 +9,7 @@ interface Commission {
   _id: string;
   order_id: string;
   order_total: number;
+  original_order_total?: number;
   commission_rate: number;
   commission_amount: number;
   status: string;
@@ -169,7 +170,19 @@ export default function EarningsPage() {
                     {c.order_id.slice(-8)}
                   </td>
                   <td className="px-6 py-3 font-medium text-slate-900">
-                    ₹{c.order_total.toLocaleString("en-IN")}
+                    <div className="flex flex-col">
+                      {c.original_order_total && c.original_order_total !== c.order_total ? (
+                        <>
+                          <span className="line-through text-slate-400 text-xs">₹{c.original_order_total.toLocaleString("en-IN")}</span>
+                          <span>₹{c.order_total.toLocaleString("en-IN")}</span>
+                          <span className="text-[10px] text-amber-600">
+                            {c.status === "cancelled" ? "Order cancelled" : "Item cancelled"}
+                          </span>
+                        </>
+                      ) : (
+                        <span>₹{c.order_total.toLocaleString("en-IN")}</span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-3 text-slate-500">
                     {(c.commission_rate * 100).toFixed(0)}%
