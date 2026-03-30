@@ -1,19 +1,27 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useInfluencerStore } from "@/store/useInfluencerStore";
 import { authApi, influencerApi } from "@/lib/api";
 import { Mail, Lock, Loader2, Sparkles } from "lucide-react";
 
-export default function InfluencerLoginPage() {
+function InfluencerLoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const sessionExpired = searchParams.get("session") === "expired";
 
   const router = useRouter();
   const setAuth = useInfluencerStore((s) => s.setAuth);
+
+  useEffect(() => {
+    if (sessionExpired) {
+      setError("Your session expired. Please sign in again.");
+    }
+  }, [sessionExpired]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +30,7 @@ export default function InfluencerLoginPage() {
 
     try {
       const response = await authApi.login({ email, password });
-      const { access_token, user } = response.data;
+      const { access_token, refresh_token, user } = response.data;
 
       if (!user.is_influencer) {
         setError("Access denied. This portal is for approved influencers only.");
@@ -30,12 +38,17 @@ export default function InfluencerLoginPage() {
         return;
       }
 
-      setAuth(user, access_token);
+      setAuth(user, access_token, refresh_token);
 
       try {
         const profileRes = await influencerApi.getProfile();
         const profile = profileRes.data;
-        setAuth({ ...user, username: profile.username }, access_token);
+        const { token, refreshToken } = useInfluencerStore.getState();
+        setAuth(
+          { ...user, username: profile.username },
+          token!,
+          refreshToken!
+        );
       } catch {
         // profile fetch may fail on first login before profile is set up
       }
@@ -115,5 +128,19 @@ export default function InfluencerLoginPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function InfluencerLoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-slate-50">
+          <Loader2 className="animate-spin text-emerald-700" size={32} />
+        </div>
+      }
+    >
+      <InfluencerLoginForm />
+    </Suspense>
   );
 }

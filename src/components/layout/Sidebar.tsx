@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useInfluencerStore } from "@/store/useInfluencerStore";
+import { revokeRefreshOnServer } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -25,7 +26,9 @@ export default function Sidebar() {
   const router = useRouter();
   const { logout, user } = useInfluencerStore();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const rt = useInfluencerStore.getState().refreshToken;
+    await revokeRefreshOnServer(rt);
     logout();
     router.push("/login");
   };
