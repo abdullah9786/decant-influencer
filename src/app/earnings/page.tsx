@@ -166,8 +166,8 @@ export default function EarningsPage() {
                       year: "numeric",
                     })}
                   </td>
-                  <td className="px-6 py-3 font-mono text-xs text-slate-500">
-                    {c.order_id.slice(-8)}
+                  <td className="px-6 py-3 font-mono text-xs text-slate-500 break-all">
+                    {c.order_id}
                   </td>
                   <td className="px-6 py-3 font-medium text-slate-900">
                     <div className="flex flex-col">
